@@ -17,6 +17,10 @@ class GameList extends Component {
     )
   }
 
+  componentDidMount = () => {
+    this.props.subscribeCreateGame()
+  }
+
   render() {
     const {data} = this.props
     const games = data.listGames && data.listGames.items

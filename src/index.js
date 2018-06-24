@@ -12,6 +12,7 @@ import GameList from './components/GameList'
 import GameCreate from './components/GameCreate'
 import mutationCreateGame from './graphql/mutationCreateGame'
 import queryAllGames from './graphql/queryAllGames'
+import subscriptionOnCreateGame from './graphql/subscriptionOnCreateGame'
 
 export default class App extends React.Component {
   render() {
@@ -40,6 +41,21 @@ const GameListWithData = compose(
     },
     props: (result) => ({
       data: result.data,
+      subscribeCreateGame: () => {
+        result.data.subscribeToMore({
+          document: subscriptionOnCreateGame,
+          updateQuery: (previous, {subscriptionData: {data: {onCreateGame}}}) => ({
+            ...previous,
+            listGames: {
+              ...previous.listGames,
+              items: [
+                onCreateGame,
+                ...previous.listGames.items.filter(p => p.id != onCreateGame.id)
+              ]
+            }
+          })
+        })
+      }
     })
   })
 )(GameList)
